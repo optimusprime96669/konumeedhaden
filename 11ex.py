@@ -1,33 +1,33 @@
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB
-from sklearn import metrics
+# Load required library
+library(e1071)
 
-# Load the Iris dataset (you can replace this with your dataset)
-iris = load_iris()
-X = iris.data
-y = iris.target
+# Replace 'your_dataset.csv' with the path to your CSV file
+file_path <- 'V:/practice files/spam.csv'
+
+# Load your dataset
+your_data <- read.csv(file_path)
 
 # Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+set.seed(123) # For reproducibility
+trainIndex <- sample(1:nrow(your_data), 0.7 * nrow(your_data)) # 70% for training
+trainData <- your_data[trainIndex, ]
+testData <- your_data[-trainIndex, ]
 
-# Create a Naive Bayes classifier (Gaussian Naive Bayes for continuous features)
-model = GaussianNB()
+# Assuming the last column is the target variable and the rest are features
+# If not, modify the formula accordingly
+formula <- as.formula(paste(names(your_data)[ncol(your_data)], "~ ."))
 
-# Train the classifier using the training data
-model.fit(X_train, y_train)
+# Create a Naive Bayes model
+model <- naiveBayes(formula, data = trainData)
 
-# Predict the classes for test set
-y_pred = model.predict(X_test)
+# Predict the classes for the test data using the model
+predictions <- predict(model, testData)
 
-# Calculate accuracy
-accuracy = metrics.accuracy_score(y_test, y_pred)
-print("Accuracy:", accuracy)
+# Print the predicted classes
+print(predictions)
 
-# Classification report
-print("\nClassification Report:")
-print(metrics.classification_report(y_test, y_pred))
+# Evaluate accuracy
+accuracy <- mean(predictions == testData[, ncol(testData)])
+cat("Accuracy:", accuracy, "\n")
 
-# Confusion matrix
-print("\nConfusion Matrix:")
-print(metrics.confusion_matrix(y_test, y_pred))
+
